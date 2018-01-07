@@ -91,6 +91,9 @@ android {
     }
 
     buildTypes {
+
+        def CRASHLYTICS = "crashlytics"
+
         debug {
             minifyEnabled false
             shrinkResources false
@@ -99,6 +102,7 @@ android {
             resValue "string", "frost_name", "Frost Debug"
             resValue "string", "frost_web", "Frost Web Debug"
             ext.enableCrashlytics = false
+            buildConfigField "boolean" CRASHLYTICS "false"
         }
         releaseTest {
             minifyEnabled true
@@ -109,6 +113,7 @@ android {
             versionNameSuffix "-test"
             resValue "string", "frost_name", "Frost Test"
             resValue "string", "frost_web", "Frost Web Test"
+            buildConfigField "boolean" CRASHLYTICS "true"
         }
         release {
             minifyEnabled true
@@ -117,6 +122,16 @@ android {
             if (withPlaySigning) signingConfig signingConfigs.release
             resValue "string", "frost_name", "Frost"
             resValue "string", "frost_web", "Frost Web"
+            buildConfigField "boolean" CRASHLYTICS "true"
+        }
+        fdroid {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (withPlaySigning) signingConfig signingConfigs.release
+            resValue "string", "frost_name", "Frost FOSS"
+            resValue "string", "frost_web", "Frost Web FOSS"
+            buildConfigField "boolean" CRASHLYTICS "false"
         }
     }
 
@@ -210,8 +225,9 @@ dependencies {
     implementation "nz.bradcampbell:paperparcel-kotlin:${PAPER_PARCEL}"
     kapt "nz.bradcampbell:paperparcel-compiler:${PAPER_PARCEL}"
 
+    // crashlytics
     implementation("com.crashlytics.sdk.android:crashlytics:${CRASHLYTICS}@aar") {
-        transitive = true;
+        transitive = true
     }
 
     implementation "com.davemorrissey.labs:subsampling-scale-image-view:${SCALE_IMAGE_VIEW}"
